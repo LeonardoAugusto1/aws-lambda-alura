@@ -6,7 +6,7 @@ export const handler = async (event) => {
     body: JSON.stringify(event),
   };
 
-  log('log de execução da função lambda' + JSON.stringify(event));
+   log('log de execução v2' + JSON.stringify(event));
   
   return {   
     statusCode: 200,
