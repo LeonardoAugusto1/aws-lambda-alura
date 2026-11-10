@@ -1,8 +1,8 @@
 
 import { log } from './log.mjs';
-import { S3 } from '@aws-sdk/client-s3';
+import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 
-const s3Client = new S3({ region: 'us-east-1' });
+const s3Client = new S3({ region: 'us-east-2' });
 
 export const handler = async (event) => {
   const record = event.Records[0];
@@ -11,10 +11,12 @@ export const handler = async (event) => {
   const megaByte = 1024 * 1024;
 
   try {
-    const getObjectResult = await s3Client.getObject({
-      Bucket: bucket,
-      Key: key,
-    });
+   const getObjectResult = await s3Client.send(
+     new GetObjectCommand({
+       Bucket: bucket,
+       Key: key,
+     })
+);
 
     if (getObjectResult.ContentLength > megaByte) {
       log('Objeto muito grande');
