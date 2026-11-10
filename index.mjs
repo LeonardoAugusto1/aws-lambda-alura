@@ -7,7 +7,7 @@ const s3Client = new S3({ region: 'us-east-2' });
 export const handler = async (event) => {
   const record = event.Records[0];
   const bucket = record.s3.bucket.name;
-  const key = record.s3.object.key;
+  const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '));
   const megaByte = 1024 * 1024;
 
   try {
