@@ -1,17 +1,31 @@
-import { log } from './log.mjs';   
+
+import { log } from './log.mjs';
+import { S3 } from '@aws-sdk/client-s3';
+
+const s3Client = new S3({ region: 'us-east-1' });
 
 export const handler = async (event) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify(event),
-  };
+  const record = event.Records[0];
+  const bucket = record.s3.bucket.name;
+  const key = record.s3.object.key;
+  const megaByte = 1024 * 1024;
 
-   log('log de execução v2' + JSON.stringify(event));
-  
-  return {   
-    statusCode: 200,
-    body: JSON.stringify(event),
-  };
+  try {
+    const getObjectResult = await s3Client.getObject({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    if (getObjectResult.ContentLength > megaByte) {
+      log('Objeto muito grande');
+      return 'Objeto muito grande';
+    }
+
+    log('Objeto de tamanho OK');
+    return 'Objeto de tamanho OK';
+
+  } catch (error) {
+    log(error.message);
+    throw error;
+  }
 };
-
-
